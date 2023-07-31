@@ -181,10 +181,8 @@ for i in range(1,len(prs.slides)-1,2):
                         image_stream.seek(0)
                         
                         slide2.shapes.add_picture(image_stream, Cm(left), Cm(top), height=Cm(Height))
-                        print("Position ({}, {}) for image {}".format(left, top, currImage))
                         break
                     else:
-                        print("This image " + currImage + " doesn't go here")
                         imgIdx = imgIdx + 1 
                         
                     
