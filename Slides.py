@@ -38,7 +38,7 @@ def canPlaceHD(imgName, idx):
 
 
 
-path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC2.pptx"
+path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC3.pptx"
 imagePath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben"
 hellDunkelPath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben im Pulverbett"
 excelPath = "C:/Users/v.jayaweera/Documents/Tim/Microscope/20230607_Versuchsplan.xlsx"
@@ -118,7 +118,7 @@ for i in range(1,len(prs.slides)-1,2):
                     if(canPlaceSP(currImage, j)):
                         #Reduce image size
                         img = Image.open(imagePath + '/'+currImage)
-                        img.thumbnail((866, 575), Image.LANCZOS)
+                        img.thumbnail((500, 500), Image.LANCZOS)
                         image_stream = io.BytesIO()
                         img.save(image_stream, "PNG")
                         image_stream.seek(0)
@@ -140,7 +140,7 @@ for i in range(1,len(prs.slides)-1,2):
     #add table
     tableW = Width*3 + spacing*3
     tableHeight = 1
-    shape = slide1.shapes.add_table(1, 11, Cm(1), Cm(top), Cm(tableW),Cm(tableHeight))  
+    shape = slide1.shapes.add_table(1, 11, Cm(1), Cm(top-0.1), Cm(tableW),Cm(tableHeight))  
     table = shape.table
     
     tIndx = 0
@@ -176,7 +176,7 @@ for i in range(1,len(prs.slides)-1,2):
                     if(canPlaceHD(currImage, j)):
                         #Reduce image size
                         img = Image.open(hellDunkelPath + '/'+currImage)
-                        img.thumbnail((866, 575), Image.LANCZOS)
+                        img.thumbnail((500, 500), Image.LANCZOS)
                         image_stream = io.BytesIO()
                         img.save(image_stream, "PNG")
                         image_stream.seek(0)
@@ -195,7 +195,7 @@ for i in range(1,len(prs.slides)-1,2):
         left = left + Width + spacing
         
     #add table to slide2
-    shape = slide2.shapes.add_table(1, 11, Cm(1), Cm(top) ,Cm(tableW),Cm(tableHeight))  
+    shape = slide2.shapes.add_table(1, 11, Cm(1), Cm(top-0.1) ,Cm(tableW),Cm(tableHeight))  
     table = shape.table
     
     tIndx = 0
