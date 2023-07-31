@@ -6,6 +6,7 @@ import os
 import sys
 from PIL import Image
 import io
+from pptx.enum.text import MSO_AUTO_SIZE
 
 def canPlaceSP(imgName, idx):
     imgName = imgName[:-4]
@@ -37,7 +38,7 @@ def canPlaceHD(imgName, idx):
 
 
 
-path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC2.pptx"
+path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSmall.pptx"
 imagePath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben"
 hellDunkelPath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben im Pulverbett"
 excelPath = "C:/Users/v.jayaweera/Documents/Tim/Microscope/20230607_Versuchsplan.xlsx"
@@ -89,7 +90,7 @@ for i in range(1,len(prs.slides)-1,2):
     title = slide1.shapes.title.text
     
     subDf = df.loc[df['Simulate'] == title]
-    
+    subDf = subDf.drop_duplicates('Run', keep='first')
     
     #Get unique runs, should return 3 items
     uniquePrefixes = (subDf.Versuch.astype(str) + '_' + subDf.Run.astype(str)).unique()
@@ -106,19 +107,22 @@ for i in range(1,len(prs.slides)-1,2):
         imgSet = kvDict.get(uniquePrefixes[j])
         
               
-        #if image set exists, insert
+        #if image set exists, insert into Slide 1
         if imgSet: 
             top = 3.6           
             for j in range(2):
                 imgIdx = 0
                 while(imgIdx < len(imgSet)):
                     currImage = imgSet[imgIdx]
+                    
                     if(canPlaceSP(currImage, j)):
+                        #Reduce image size
                         img = Image.open(imagePath + '/'+currImage)
                         img.thumbnail((866, 575), Image.LANCZOS)
                         image_stream = io.BytesIO()
                         img.save(image_stream, "PNG")
                         image_stream.seek(0)
+                        
                         slide1.shapes.add_picture(image_stream, Cm(left), Cm(top), height=Cm(Height))
                         print("Position ({}, {}) for image {}".format(left, top, currImage))
                         break
@@ -130,8 +134,25 @@ for i in range(1,len(prs.slides)-1,2):
                     
                 top = top + Height + 0.25
                
-
+                
         left = left + Width + spacing
+        
+    #add table
+    tableW = Width*3 + spacing*3
+    tableHeight = 1
+    shape = slide1.shapes.add_table(1, 11, Cm(top+0.25), Cm(1),Cm(tableW),Cm(tableHeight))  
+    table = shape.table
+    
+    tIndx = 0
+    for j in range(3):
+        row = subDf.iloc[j]
+        table.cell(0,tIndx).text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        table.cell(0,tIndx).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+        # table.cell(0,tIndx).text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        # table.cell(0,tIndx).text_frame.fit_text() 
+        table.cell(0,tIndx+1).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+        table.cell(0,tIndx+2).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+        tIndx = tIndx + 4
             
     #hell und dunkel
     left = 1
@@ -147,12 +168,15 @@ for i in range(1,len(prs.slides)-1,2):
                 imgIdx = 0
                 while(imgIdx < len(imgSet)):
                     currImage = imgSet[imgIdx]
+                    
                     if(canPlaceHD(currImage, j)):
+                        #Reduce image size
                         img = Image.open(hellDunkelPath + '/'+currImage)
                         img.thumbnail((866, 575), Image.LANCZOS)
                         image_stream = io.BytesIO()
                         img.save(image_stream, "PNG")
                         image_stream.seek(0)
+                        
                         slide2.shapes.add_picture(image_stream, Cm(left), Cm(top), height=Cm(Height))
                         print("Position ({}, {}) for image {}".format(left, top, currImage))
                         break
