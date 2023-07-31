@@ -93,7 +93,7 @@ for i in range(1,len(prs.slides)-1,2):
     subDf = subDf.drop_duplicates('Run', keep='first')
     
     #Get unique runs, should return 3 items
-    uniquePrefixes = (subDf.Versuch.astype(str) + '_' + subDf.Run.astype(str)).unique()
+    uniquePrefixes = list(subDf.Versuch.astype(str) + '_' + subDf.Run.astype(str))
     
     #Slide 1
     left = 1
@@ -140,7 +140,7 @@ for i in range(1,len(prs.slides)-1,2):
     #add table
     tableW = Width*3 + spacing*3
     tableHeight = 1
-    shape = slide1.shapes.add_table(1, 11, Cm(top+0.25), Cm(1),Cm(tableW),Cm(tableHeight))  
+    shape = slide1.shapes.add_table(1, 11, Cm(1), Cm(top+0.1), Cm(tableW),Cm(tableHeight))  
     table = shape.table
     
     tIndx = 0
@@ -190,6 +190,19 @@ for i in range(1,len(prs.slides)-1,2):
 
         left = left + Width + spacing
         
+    #add table to slide2
+    shape = slide2.shapes.add_table(1, 11, Cm(1), Cm(top+0.1) ,Cm(tableW),Cm(tableHeight))  
+    table = shape.table
     
+    tIndx = 0
+    for j in range(3):
+        row = subDf.iloc[j]
+        table.cell(0,tIndx).text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        table.cell(0,tIndx).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+        # table.cell(0,tIndx).text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        # table.cell(0,tIndx).text_frame.fit_text() 
+        table.cell(0,tIndx+1).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+        table.cell(0,tIndx+2).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+        tIndx = tIndx + 4
 
 prs.save(path)
