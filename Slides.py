@@ -50,7 +50,7 @@ kvDict = dict()
 
 for filename in dirPictures: 
     #Check if file is of accepted type
-    if( '.' in filename and filename.split('.')[-1] in acceptedFileTypes):
+    if( '.' in filename and filename.split('.')[-1].lower() in acceptedFileTypes):
         nameComp = filename[:-4].split('_')
         if(len(nameComp) > 1):
             Versuch = nameComp[0]
@@ -66,7 +66,7 @@ for filename in dirPictures:
                 
 for filename in hdPictures: 
     #Check if file is of accepted type
-    if( '.' in filename and filename.split('.')[-1] in acceptedFileTypes):
+    if( '.' in filename and filename.split('.')[-1].lower() in acceptedFileTypes):
         nameComp = filename[:-4].split('_')
         if(len(nameComp) > 1):
             Versuch = nameComp[0]
@@ -80,10 +80,12 @@ for filename in hdPictures:
             else:
                 kvDict[Versuch + '_' + Run] = [filename]
             
-
+#Open excel doc and presentation
 df = pd.read_excel(excelPath)
 prs = Presentation(path)
 
+#Iterate over slides, 2 at a time, 
+#REQUIRES: minimum of 3 slides
 for i in range(1,len(prs.slides)-1,2):
     slide1 = prs.slides[i]
     slide2 = prs.slides[i+1]
@@ -92,7 +94,7 @@ for i in range(1,len(prs.slides)-1,2):
     subDf = df.loc[df['Simulate'] == title]
     subDf = subDf.drop_duplicates('Run', keep='first')
     
-    #Get unique runs, should return 3 items
+    #Get unique Runs, should return 3 items
     uniquePrefixes = list(subDf.Versuch.astype(str) + '_' + subDf.Run.astype(str))
     
     #Slide 1
@@ -124,11 +126,8 @@ for i in range(1,len(prs.slides)-1,2):
                         image_stream.seek(0)
                         
                         slide1.shapes.add_picture(image_stream, Cm(left), Cm(top), height=Cm(Height))
-                        print("Position ({}, {}) for image {}".format(left, top, currImage))
                         break
                     else:
-                        slide1.shapes.add_shape(MSO_SHAPE_TYPE.PLACEHOLDER, left, top, Width, Height)
-                        print("This image " + currImage + " doesn't go here")
                         imgIdx = imgIdx + 1 
                         
                     
@@ -137,7 +136,7 @@ for i in range(1,len(prs.slides)-1,2):
                 
         left = left + Width + spacing
         
-    #add table
+    #add table to slide 1
     tableW = Width*3 + spacing*3
     tableHeight = 1
     shape = slide1.shapes.add_table(1, 11, Cm(1), Cm(top-0.1), Cm(tableW),Cm(tableHeight))  
@@ -158,7 +157,7 @@ for i in range(1,len(prs.slides)-1,2):
         tIndx = tIndx + 4
         
             
-    #hell und dunkel
+    #Slide 2, hell und dunkel
     left = 1
     for j in range(len(uniquePrefixes)):
         #Images available to insert into slide
