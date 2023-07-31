@@ -1,5 +1,5 @@
 from pptx import Presentation
-from pptx.util import Cm, Inches
+from pptx.util import Cm, Inches, Pt
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 import pandas as pd 
 import os 
@@ -38,7 +38,7 @@ def canPlaceHD(imgName, idx):
 
 
 
-path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSmall.pptx"
+path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC2.pptx"
 imagePath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben"
 hellDunkelPath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben im Pulverbett"
 excelPath = "C:/Users/v.jayaweera/Documents/Tim/Microscope/20230607_Versuchsplan.xlsx"
@@ -140,19 +140,23 @@ for i in range(1,len(prs.slides)-1,2):
     #add table
     tableW = Width*3 + spacing*3
     tableHeight = 1
-    shape = slide1.shapes.add_table(1, 11, Cm(1), Cm(top+0.1), Cm(tableW),Cm(tableHeight))  
+    shape = slide1.shapes.add_table(1, 11, Cm(1), Cm(top), Cm(tableW),Cm(tableHeight))  
     table = shape.table
     
     tIndx = 0
     for j in range(3):
         row = subDf.iloc[j]
-        table.cell(0,tIndx).text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        table.cell(0,tIndx).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
-        # table.cell(0,tIndx).text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        # table.cell(0,tIndx).text_frame.fit_text() 
-        table.cell(0,tIndx+1).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
-        table.cell(0,tIndx+2).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+        
+        for k in range(3):            
+            table.cell(0,tIndx + k).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+            table.cell(0,tIndx + k).text_frame.paragraphs[0].runs[0].font.size = Pt(11)
+            table.columns[tIndx + k].width = Inches(1.25)
+       
+        if(j < 2):
+            table.columns[tIndx + 3].width = Cm(1.5)
+            
         tIndx = tIndx + 4
+        
             
     #hell und dunkel
     left = 1
@@ -191,18 +195,21 @@ for i in range(1,len(prs.slides)-1,2):
         left = left + Width + spacing
         
     #add table to slide2
-    shape = slide2.shapes.add_table(1, 11, Cm(1), Cm(top+0.1) ,Cm(tableW),Cm(tableHeight))  
+    shape = slide2.shapes.add_table(1, 11, Cm(1), Cm(top) ,Cm(tableW),Cm(tableHeight))  
     table = shape.table
     
     tIndx = 0
     for j in range(3):
         row = subDf.iloc[j]
-        table.cell(0,tIndx).text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        table.cell(0,tIndx).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
-        # table.cell(0,tIndx).text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        # table.cell(0,tIndx).text_frame.fit_text() 
-        table.cell(0,tIndx+1).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
-        table.cell(0,tIndx+2).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+        
+        for k in range(3):            
+            table.cell(0,tIndx + k).text = row["P [W]"].astype(str) + "W, " + row["Vs [mm/s]"].astype(str) + "mm/s"
+            table.cell(0,tIndx + k).text_frame.paragraphs[0].runs[0].font.size = Pt(11)
+            table.columns[tIndx + k].width = Inches(1.25)
+       
+        if(j < 2):
+            table.columns[tIndx + 3].width = Cm(1.5)
+            
         tIndx = tIndx + 4
-
+        
 prs.save(path)
