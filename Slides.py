@@ -4,6 +4,8 @@ from pptx.enum.shapes import MSO_SHAPE_TYPE
 import pandas as pd 
 import os 
 import sys
+from PIL import Image
+import io
 
 def canPlaceSP(imgName, idx):
     imgName = imgName[:-4]
@@ -34,7 +36,8 @@ def canPlaceHD(imgName, idx):
     return False
 
 
-path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSmall.pptx"
+
+path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC2.pptx"
 imagePath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben"
 hellDunkelPath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben im Pulverbett"
 excelPath = "C:/Users/v.jayaweera/Documents/Tim/Microscope/20230607_Versuchsplan.xlsx"
@@ -111,13 +114,15 @@ for i in range(1,len(prs.slides)-1,2):
                 while(imgIdx < len(imgSet)):
                     currImage = imgSet[imgIdx]
                     if(canPlaceSP(currImage, j)):
-                        slide1.shapes.add_shape(MSO_SHAPE_TYPE.PLACEHOLDER, left, top, Width, Height)
-                        slide1.placeholders[-1].insert_picture(imagePath + '/'+currImage)
-                        # slide1.shapes.add_picture(imagePath + '/'+currImage, Cm(left), Cm(top), height=Cm(Height))
+                        img = Image.open(imagePath + '/'+currImage)
+                        img.thumbnail((866, 575), Image.LANCZOS)
+                        image_stream = io.BytesIO()
+                        img.save(image_stream, "PNG")
+                        image_stream.seek(0)
+                        slide1.shapes.add_picture(image_stream, Cm(left), Cm(top), height=Cm(Height))
                         print("Position ({}, {}) for image {}".format(left, top, currImage))
                         break
                     else:
-                        #insert place holder?
                         slide1.shapes.add_shape(MSO_SHAPE_TYPE.PLACEHOLDER, left, top, Width, Height)
                         print("This image " + currImage + " doesn't go here")
                         imgIdx = imgIdx + 1 
@@ -143,11 +148,15 @@ for i in range(1,len(prs.slides)-1,2):
                 while(imgIdx < len(imgSet)):
                     currImage = imgSet[imgIdx]
                     if(canPlaceHD(currImage, j)):
-                        slide2.shapes.add_picture(hellDunkelPath + '/'+currImage, Cm(left), Cm(top), height=Cm(Height))
+                        img = Image.open(hellDunkelPath + '/'+currImage)
+                        img.thumbnail((866, 575), Image.LANCZOS)
+                        image_stream = io.BytesIO()
+                        img.save(image_stream, "PNG")
+                        image_stream.seek(0)
+                        slide2.shapes.add_picture(image_stream, Cm(left), Cm(top), height=Cm(Height))
                         print("Position ({}, {}) for image {}".format(left, top, currImage))
                         break
                     else:
-                        #insert place holder?
                         print("This image " + currImage + " doesn't go here")
                         imgIdx = imgIdx + 1 
                         
