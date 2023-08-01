@@ -15,9 +15,9 @@ def canPlaceSP(imgName, idx):
     if(len(comp) < 4):
         return False
     
-    if idx == 0 and comp[-1] == "seite":
+    if idx == 0 and comp[-1].lower() == "seite":
         return True
-    elif idx == 1 and comp[-1] == "Partikel":
+    elif idx == 1 and comp[-1].lower() == "partikel":
         return True
     
     return False
@@ -29,16 +29,16 @@ def canPlaceHD(imgName, idx):
     if(len(comp) < 4):
         return False
     
-    if idx == 0 and comp[-1] == "dunkel":
+    if idx == 0 and comp[-1].lower() == "dunkel":
         return True
-    elif idx == 1 and comp[-1] == "hell":
+    elif idx == 1 and comp[-1].lower() == "hell":
         return True
     
     return False
 
 
 
-path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC3.pptx"
+path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC2.pptx"
 imagePath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben"
 hellDunkelPath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben im Pulverbett"
 excelPath = "C:/Users/v.jayaweera/Documents/Tim/Microscope/20230607_Versuchsplan.xlsx"
@@ -92,10 +92,11 @@ for i in range(1,len(prs.slides)-1,2):
     title = slide1.shapes.title.text
     
     subDf = df.loc[df['Simulate'] == title]
-    subDf = subDf.drop_duplicates('Run', keep='first')
+    #Sort sub data frame to ensure Runs are ascending order
+    subDF = subDf.sort_values('Run')
     
     #Get unique Runs, should return 3 items
-    uniquePrefixes = list(subDf.Versuch.astype(str) + '_' + subDf.Run.astype(str))
+    uniquePrefixes = (subDf.Versuch.astype(str) + '_' + subDf.Run.astype(str)).unique()
     
     #Slide 1
     left = 1
