@@ -8,6 +8,7 @@ from PIL import Image
 import io
 from pptx.enum.text import MSO_AUTO_SIZE
 
+
 def canPlaceSP(imgName, idx):
     imgName = imgName[:-4]
     comp = imgName.split('_')
@@ -21,6 +22,7 @@ def canPlaceSP(imgName, idx):
         return True
     
     return False
+
 
 def canPlaceHD(imgName, idx):
     imgName = imgName[:-4]
@@ -37,7 +39,26 @@ def canPlaceHD(imgName, idx):
     return False
 
 
-
+def addToDict(directory, Dict):
+    for filename in directory: 
+        #Check if file is of accepted type
+        if( '.' in filename and filename.split('.')[-1].lower() in acceptedFileTypes):
+            nameComp = filename[:-4].split('_')
+            if(len(nameComp) > 1):
+                Versuch = nameComp[0]
+                Run = nameComp[1]
+            
+                val = Dict.get(Versuch + '_' + Run)
+                
+                if val:
+                    val.append(filename)
+                    Dict.update({Versuch + '_' + Run: val})
+                else:
+                    Dict[Versuch + '_' + Run] = [filename]
+                    
+ 
+                    
+    
 path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC2.pptx"
 imagePath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben"
 hellDunkelPath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben im Pulverbett"
@@ -48,51 +69,24 @@ dirPictures = os.listdir(imagePath)
 hdPictures = os.listdir(hellDunkelPath)
 kvDict = dict()
 
-for filename in dirPictures: 
-    #Check if file is of accepted type
-    if( '.' in filename and filename.split('.')[-1].lower() in acceptedFileTypes):
-        nameComp = filename[:-4].split('_')
-        if(len(nameComp) > 1):
-            Versuch = nameComp[0]
-            Run = nameComp[1]
-        
-            val = kvDict.get(Versuch + '_' + Run)
-            
-            if val:
-                val.append(filename)
-                kvDict.update({Versuch + '_' + Run: val})
-            else:
-                kvDict[Versuch + '_' + Run] = [filename]
-                
-for filename in hdPictures: 
-    #Check if file is of accepted type
-    if( '.' in filename and filename.split('.')[-1].lower() in acceptedFileTypes):
-        nameComp = filename[:-4].split('_')
-        if(len(nameComp) > 1):
-            Versuch = nameComp[0]
-            Run = nameComp[1]
-        
-            val = kvDict.get(Versuch + '_' + Run)
-            
-            if val:
-                val.append(filename)
-                kvDict.update({Versuch + '_' + Run: val})
-            else:
-                kvDict[Versuch + '_' + Run] = [filename]
+#Add image file names to dictionary
+addToDict(dirPictures, kvDict)
+addToDict(hdPictures, kvDict)
+
             
 #Open excel doc and presentation
 df = pd.read_excel(excelPath)
 prs = Presentation(path)
 
+
 #Iterate over slides, 2 at a time, 
-#REQUIRES: minimum of 3 slides
 for i in range(1,len(prs.slides)-1,2):
     slide1 = prs.slides[i]
     slide2 = prs.slides[i+1]
     title = slide1.shapes.title.text
     
     subDf = df.loc[df['Simulate'] == title]
-    #Sort sub data frame to ensure Runs are ascending order
+    #Sort sub data frame to ensure Runs are in ascending order
     subDF = subDf.sort_values('Run')
     
     #Get unique Runs, should return 3 items
