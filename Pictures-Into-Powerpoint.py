@@ -7,78 +7,28 @@ import sys
 from PIL import Image
 import io
 from pptx.enum.text import MSO_AUTO_SIZE
-
-
-def canPlaceSP(imgName, idx):
-    imgName = imgName[:-4]
-    comp = imgName.split('_')
-    
-    if(len(comp) < 4):
-        return False
-    
-    if idx == 0 and comp[-1].lower() == "seite":
-        return True
-    elif idx == 1 and comp[-1].lower() == "partikel":
-        return True
-    
-    return False
-
-
-def canPlaceHD(imgName, idx):
-    imgName = imgName[:-4]
-    comp = imgName.split('_')
-    
-    if(len(comp) < 4):
-        return False
-    
-    if idx == 0 and comp[-1].lower() == "dunkel":
-        return True
-    elif idx == 1 and comp[-1].lower() == "hell":
-        return True
-    
-    return False
-
-
-def addToDict(directory, Dict):
-    for filename in directory: 
-        #Check if file is of accepted type
-        if( '.' in filename and filename.split('.')[-1].lower() in acceptedFileTypes):
-            nameComp = filename[:-4].split('_')
-            if(len(nameComp) > 1):
-                Versuch = nameComp[0]
-                Run = nameComp[1]
-            
-                val = Dict.get(Versuch + '_' + Run)
-                
-                if val:
-                    val.append(filename)
-                    Dict.update({Versuch + '_' + Run: val})
-                else:
-                    Dict[Versuch + '_' + Run] = [filename]
-                    
  
-                    
+
+def createOrOpen(prese_path = None):
+    if prese_path is not None:
+        return Presentation(prese_path)
+    else: return Presentation()
     
-path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC2.pptx"
-imagePath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben"
-hellDunkelPath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben im Pulverbett"
-excelPath = "C:/Users/v.jayaweera/Documents/Tim/Microscope/20230607_Versuchsplan.xlsx"
-acceptedFileTypes = ["jpg", "png", "bmp", "tif", "JPG"]
+# path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC2.pptx"
+# imagePath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben"
+# hellDunkelPath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben im Pulverbett"
+# excelPath = "C:/Users/v.jayaweera/Documents/Tim/Microscope/20230607_Versuchsplan.xlsx"
+# acceptedFileTypes = ["jpg", "png", "bmp", "tif"]
 
-dirPictures = os.listdir(imagePath)
-hdPictures = os.listdir(hellDunkelPath)
-kvDict = dict()
+# dirPictures = os.listdir(imagePath)
 
-#Add image file names to dictionary
-addToDict(dirPictures, kvDict)
-addToDict(hdPictures, kvDict)
 
-            
 #Open excel doc and presentation
-df = pd.read_excel(excelPath)
-prs = Presentation(path)
+# df = pd.read_excel(excelPath)
+# prs = Presentation(path)
 
-
+print(type(createOrOpen()))
+sys.exit()
 #Iterate over slides, 2 at a time, 
 for i in range(1,len(prs.slides)-1,2):
     slide1 = prs.slides[i]
