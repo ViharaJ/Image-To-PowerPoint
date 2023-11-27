@@ -1,3 +1,25 @@
+"""
+Places images into an empty PowerPoint Presentation and creates a small table
+at the bottom of each image.
+
+It is assumed that images HAVE NOT been RENAMED. The excel file will be used to
+figure out the experiment run, conditions, etc and eventually placement on the 
+slide.
+
+
+How to use: 
+    1. Create an empty presentation. Change the variable 'path' to its location 
+    2. Change 'imagePath' to folder with seite and partikel images
+    3. Change 'hellDunkelPath' 
+    4. Change excelPath to excel file containing all the data 
+    5. Run 
+    
+IMPORTANT: This script is not very versatile and needs to be refactored for 
+a more general use case. However, this script can be used as a quick start guide
+for more general scripts. 
+
+Documenation to pptx: https://python-pptx.readthedocs.io/
+"""
 from pptx import Presentation
 from pptx.util import Cm, Inches, Pt
 from pptx.enum.shapes import MSO_SHAPE_TYPE
@@ -7,6 +29,7 @@ import sys
 from PIL import Image
 import io
 from pptx.enum.text import MSO_AUTO_SIZE
+import timeit
 
 
 def canPlaceSP(imgName, idx):
@@ -56,8 +79,10 @@ def addToDict(directory, Dict):
                 else:
                     Dict[Versuch + '_' + Run] = [filename]
                     
- 
+    
                     
+
+start = timeit.default_timer()
     
 path = "C:/Users/v.jayaweera/Documents/Tim/Slides/TestSlideEmptyC2.pptx"
 imagePath = "C:/Users/v.jayaweera/Documents/Tim/Slides/20230607_Proben"
@@ -205,3 +230,7 @@ for i in range(1,len(prs.slides)-1,2):
         tIndx = tIndx + 4
         
 prs.save(path)
+
+stop = timeit.default_timer()
+
+print('Time: ', stop - start)
