@@ -6,6 +6,13 @@ It is assumed that images HAVE NOT been RENAMED. The excel file will be used to
 figure out the experiment run, conditions, etc and eventually placement on the 
 slide.
 
+IMPORTANT: This script is not very versatile and needs to be refactored for 
+a more general use case. However, this script can be used as a quick start guide
+for more general scripts. 
+
+Documenation to pptx: https://python-pptx.readthedocs.io/
+
+
 
 How to use: 
     1. Create an empty presentation. Change the variable 'path' to its location 
@@ -14,11 +21,15 @@ How to use:
     4. Change excelPath to excel file containing all the data 
     5. Run 
     
-IMPORTANT: This script is not very versatile and needs to be refactored for 
-a more general use case. However, this script can be used as a quick start guide
-for more general scripts. 
 
-Documenation to pptx: https://python-pptx.readthedocs.io/
+
+!!!BACKGROUND!!!:
+
+When images are placed into a presentation, they are compressed. If they are 
+not compressed, the PowerPoint presentation will be be noticeably large in 
+file size and it will lag a lot when you scroll through the slides. This is 
+why the images are reduced in size before being inserted into the PowerPoint 
+presentation 
 """
 from pptx import Presentation
 from pptx.util import Cm, Inches, Pt
